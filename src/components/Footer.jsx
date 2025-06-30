@@ -28,9 +28,21 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { name: "LinkedIn", icon: <Linkedin className="w-5 h-5" />, href: "#" },
-    { name: "Instagram", icon: <Instagram className="w-5 h-5" />, href: "#" },
-    { name: "Facebook", icon: <Facebook className="w-5 h-5" />, href: "#" },
+    {
+      name: "LinkedIn",
+      icon: <Linkedin className="w-5 h-5" />,
+      href: "https://eg.linkedin.com/company/crystal-power-investments-export/",
+    },
+    {
+      name: "Instagram",
+      icon: <Instagram className="w-5 h-5" />,
+      href: "https://instagram.com/cpiexport/",
+    },
+    {
+      name: "Facebook",
+      icon: <Facebook className="w-5 h-5" />,
+      href: "https://www.facebook.com/@CpinvestmentsMM/",
+    },
   ];
 
   return (
@@ -79,7 +91,7 @@ const Footer = () => {
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-gray-400" />
                 <span className="text-gray-300">
-                  info@crystalpowerinvestments.com
+                  info@crystalpowerinvestment.com
                 </span>
               </div>
             </div>
@@ -133,6 +145,7 @@ const Footer = () => {
                   <a
                     key={social.name}
                     href={social.href}
+                    target="_blank"
                     className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200"
                     aria-label={social.name}
                   >
