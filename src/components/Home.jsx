@@ -1,4 +1,13 @@
 import { Link } from "react-router-dom";
+import { Canvas } from "@react-three/fiber";
+import {
+  OrbitControls,
+  Environment,
+  Float,
+  Text3D,
+  Sparkles,
+  Stars,
+} from "@react-three/drei";
 import {
   Building2,
   Users,
@@ -12,7 +21,9 @@ import { Button } from "@/components/ui/button";
 import schoolCateringImg from "../assets/school-catering.jpg";
 import hawanaCafeImg from "../assets/hawana-cafe.jpg";
 import PartnersCarousel from "./Carousel";
+import { Suspense } from "react";
 
+// Rest of your component remains the same...
 const cpiLogo =
   "https://res.cloudinary.com/dbjaqbow6/image/upload/v1751207381/CPI-Logo_xm7na3.jpg";
 
@@ -58,10 +69,42 @@ const Home = () => {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white py-20 lg:py-32">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white py-16 min-h-[650px]">
+        {/* 3D Background */}
+        <div className="absolute inset-0 z-0">
+          <Canvas camera={{ position: [0, 3, 8], fov: 45 }} shadows>
+            <ambientLight intensity={0.6} />
+            <directionalLight position={[5, 10, 5]} intensity={1} castShadow />
+            <Suspense fallback={null}>
+              <Environment preset="city" />
+              <Stars
+                radius={100}
+                depth={50}
+                count={5000}
+                factor={4}
+                saturation={0}
+                fade
+              />
+              <Sparkles
+                count={100}
+                scale={[10, 5, 10]}
+                speed={0.5}
+                size={1.2}
+                color="gold"
+              />
+            </Suspense>
+            <OrbitControls
+              enableZoom={false}
+              autoRotate
+              autoRotateSpeed={0.7}
+            />
+          </Canvas>
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-start z-10 pt-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full">
+            {/* Left Text */}
             <div>
               <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
                 Building Your
@@ -89,8 +132,10 @@ const Home = () => {
                 </Link>
               </div>
             </div>
+
+            {/* Right Logo */}
             <div className="flex justify-center lg:justify-end">
-              <div className="w-80 h-80 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 p-8 flex items-center justify-center shadow-2xl">
+              <div className="w-80 h-80 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 p-6 flex items-center justify-center shadow-2xl">
                 <img
                   src={cpiLogo}
                   alt="Crystal Power Investments"
