@@ -62,7 +62,7 @@ const Careers = () => {
 
     // Additional Information
     noticePeriod: "",
-    whyJoinCPI: "",
+    joinReason: "",
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -103,7 +103,7 @@ const Careers = () => {
     if (step === 4) {
       if (!formData.cvFile) errors.cvFile = "Required";
       if (!formData.profilePicture) errors.profilePicture = "Required";
-      if (!formData.whyJoinCPI.trim()) errors.whyJoinCPI = "Required";
+      if (!formData.joinReason.trim()) errors.joinReason = "Required";
     }
 
     setFormErrors(errors);
@@ -841,24 +841,24 @@ const Careers = () => {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="whyJoinCPI">
+                        <Label htmlFor="joinReason">
                           Why do you want to join Crystal Power Investments? *
                         </Label>
                         <Textarea
-                          id="whyJoinCPI"
+                          id="joinReason"
                           required
-                          value={formData.whyJoinCPI}
+                          value={formData.joinReason}
                           onChange={(e) =>
-                            handleInputChange("whyJoinCPI", e.target.value)
+                            handleInputChange("joinReason", e.target.value)
                           }
                           className="mt-1"
                           placeholder="Tell us what motivates you to join our team and how you can contribute to our success..."
                           rows={4}
-                          error={formErrors.whyJoinCPI}
+                          error={formErrors.joinReason}
                         />
-                        {formErrors.whyJoinCPI && (
+                        {formErrors.joinReason && (
                           <p className="text-sm text-red-500 mt-1">
-                            {formErrors.whyJoinCPI}
+                            {formErrors.joinReason}
                           </p>
                         )}
                       </div>
