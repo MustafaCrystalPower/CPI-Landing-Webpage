@@ -1,13 +1,6 @@
 import { Link } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
-import {
-  OrbitControls,
-  Environment,
-  Float,
-  Text3D,
-  Sparkles,
-  Stars,
-} from "@react-three/drei";
+import { OrbitControls, Environment, Sparkles, Stars } from "@react-three/drei";
 import {
   Building2,
   Users,

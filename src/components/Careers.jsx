@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,6 +31,7 @@ import { toast } from "sonner";
 
 const Careers = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     // Personal Information
     fullNameEnglish: "",
@@ -155,26 +156,96 @@ const Careers = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateStep(4)) {
-      console.log("Form submitted:", formData);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    if (!validateStep(4)) {
+      toast.error("Please complete all required fields before submitting", {
+        position: "top-center",
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      // Create FormData object
+      const formDataToSend = new FormData();
+
+      // Append all text fields
+      Object.keys(formData).forEach((key) => {
+        if (
+          key !== "cvFile" &&
+          key !== "profilePicture" &&
+          key !== "certificationsFile"
+        ) {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
+
+      // Append files
+      if (formData.cvFile) {
+        formDataToSend.append("cvFile", formData.cvFile);
+      }
+      if (formData.profilePicture) {
+        formDataToSend.append("profilePicture", formData.profilePicture);
+      }
+      if (formData.certificationsFile) {
+        if (Array.isArray(formData.certificationsFile)) {
+          formData.certificationsFile.forEach((file) => {
+            formDataToSend.append("certificationsFiles", file);
+          });
+        } else {
+          formDataToSend.append(
+            "certificationsFiles",
+            formData.certificationsFile
+          );
+        }
+      }
+
+      // Send to PRODUCTION backend
+      const response = await fetch(
+        `https://cpi-landing-webpage-backend-production.up.railway.app/api/applications`,
+        {
+          method: "POST",
+          body: formDataToSend,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit application");
+      }
+
+      const result = await response.json();
+
       toast.success("Application submitted successfully!", {
         position: "top-center",
         duration: 3000,
       });
       setIsSubmitted(true);
-    } else {
-      toast.error("Please complete all required fields before submitting", {
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error(error.message || "Failed to submit application", {
         position: "top-center",
         duration: 3000,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // Scroll to top when step changes
+  const formRef = useRef(null);
+
+  // Scroll to the form when the current step changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (formRef.current) {
+      formRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   }, [currentStep]);
 
   const benefits = [
@@ -232,39 +303,38 @@ const Careers = () => {
 
   // Stepper component
   const Stepper = () => (
-    <div className="mb-8">
+    <div className="mb-6 md:mb-8">
       <div className="flex items-center justify-between">
         {[1, 2, 3, 4].map((step) => (
-          <div key={step} className="flex flex-col items-center">
+          <div key={step} className="flex flex-col items-center relative z-10">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center 
-                ${
-                  currentStep >= step
-                    ? "bg-gray-900 text-white"
-                    : "bg-gray-200 text-gray-600"
-                }`}
+              className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-sm md:text-base ${
+                currentStep >= step
+                  ? "bg-gray-900 text-white"
+                  : "bg-gray-200 text-gray-600"
+              }`}
             >
               {step}
             </div>
             <span
-              className={`text-sm mt-2 ${
+              className={`text-xs md:text-sm mt-1 md:mt-2 text-center ${
                 currentStep >= step
                   ? "text-gray-900 font-medium"
                   : "text-gray-500"
               }`}
             >
-              {step === 1 && "Personal Info"}
-              {step === 2 && "Professional Info"}
+              {step === 1 && "Personal"}
+              {step === 2 && "Professional"}
               {step === 3 && "Skills"}
-              {step === 4 && "Documents & More"}
+              {step === 4 && "Documents"}
             </span>
           </div>
         ))}
       </div>
       <div className="relative">
-        <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
+        <div className="absolute top-4 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
         <div
-          className="absolute top-5 left-0 h-1 bg-gray-900 transition-all duration-300"
+          className="absolute top-4 left-0 h-1 bg-gray-900 transition-all duration-300"
           style={{ width: `${(currentStep - 1) * 33.33}%` }}
         ></div>
       </div>
@@ -309,7 +379,7 @@ const Careers = () => {
         {/* Application Form */}
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="text-2xl text-gray-900">
+            <CardTitle className="text-2xl text-gray-900" ref={formRef}>
               Job Application Form
             </CardTitle>
             <CardDescription>
@@ -544,14 +614,14 @@ const Careers = () => {
                       </Label>
                       <Input
                         id="yearsOfExperience"
-                        type="text"
+                        type="number"
                         required
                         value={formData.yearsOfExperience}
                         onChange={(e) =>
                           handleInputChange("yearsOfExperience", e.target.value)
                         }
                         className="mt-1"
-                        placeholder="e.g., 5 years"
+                        placeholder="e.g., 5"
                         error={formErrors.yearsOfExperience}
                       />
                       {formErrors.yearsOfExperience && (
@@ -896,9 +966,38 @@ const Careers = () => {
                   <Button
                     type="submit"
                     className="bg-gray-900 hover:bg-gray-800 text-white py-3 text-lg font-semibold cursor-pointer"
+                    disabled={isSubmitting}
                   >
-                    Submit Application
-                    <Upload className="ml-2 w-5 h-5" />
+                    {isSubmitting ? (
+                      <span className="flex items-center">
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Submitting...
+                      </span>
+                    ) : (
+                      <>
+                        Submit Application
+                        <Upload className="ml-2 w-5 h-5" />
+                      </>
+                    )}
                   </Button>
                 )}
               </div>
