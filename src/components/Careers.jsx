@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import FileUpload from "@/components/ui/file-upload";
 import { toast } from "sonner";
+import JobPostingsSection from "@/components/jobListings";
 
 const Careers = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -218,8 +219,6 @@ const Careers = () => {
         throw new Error(errorData.message || "Failed to submit application");
       }
 
-      const result = await response.json();
-
       toast.success("Application submitted successfully!", {
         position: "top-center",
         duration: 3000,
@@ -376,634 +375,648 @@ const Careers = () => {
           ))}
         </div>
 
+        <JobPostingsSection />
+
         {/* Application Form */}
-        <Card className="shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-2xl text-gray-900" ref={formRef}>
-              Job Application Form
-            </CardTitle>
-            <CardDescription>
-              Please fill out all required fields. Fields marked with * are
-              mandatory.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Stepper />
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Step 1: Personal Information */}
-              {currentStep === 1 && (
-                <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
-                    Personal Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="fullNameEnglish">
-                        Full Name (English) *
-                      </Label>
-                      <Input
-                        id="fullNameEnglish"
-                        type="text"
-                        required
-                        value={formData.fullNameEnglish}
-                        onChange={(e) =>
-                          handleInputChange("fullNameEnglish", e.target.value)
-                        }
-                        className="mt-1"
-                        error={formErrors.fullNameEnglish}
-                      />
-                      {formErrors.fullNameEnglish && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.fullNameEnglish}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="fullNameArabic">
-                        Full Name (Arabic) *
-                      </Label>
-                      <Input
-                        id="fullNameArabic"
-                        type="text"
-                        required
-                        value={formData.fullNameArabic}
-                        onChange={(e) =>
-                          handleInputChange("fullNameArabic", e.target.value)
-                        }
-                        className="mt-1"
-                        error={formErrors.fullNameArabic}
-                      />
-                      {formErrors.fullNameArabic && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.fullNameArabic}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="nationalId">National ID *</Label>
-                      <Input
-                        id="nationalId"
-                        type="text"
-                        required
-                        value={formData.nationalId}
-                        onChange={(e) =>
-                          handleInputChange("nationalId", e.target.value)
-                        }
-                        className="mt-1"
-                        error={formErrors.nationalId}
-                      />
-                      {formErrors.nationalId && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.nationalId}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="dateOfBirth">Date of Birth *</Label>
-                      <Input
-                        id="dateOfBirth"
-                        type="date"
-                        required
-                        value={formData.dateOfBirth}
-                        onChange={(e) =>
-                          handleInputChange("dateOfBirth", e.target.value)
-                        }
-                        className="mt-1"
-                        error={formErrors.dateOfBirth}
-                      />
-                      {formErrors.dateOfBirth && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.dateOfBirth}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="mobileNumber">Mobile Number *</Label>
-                      <Input
-                        id="mobileNumber"
-                        type="tel"
-                        required
-                        value={formData.mobileNumber}
-                        onChange={(e) =>
-                          handleInputChange("mobileNumber", e.target.value)
-                        }
-                        className="mt-1"
-                        error={formErrors.mobileNumber}
-                      />
-                      {formErrors.mobileNumber && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.mobileNumber}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="whatsappNumber">WhatsApp Number *</Label>
-                      <Input
-                        id="whatsappNumber"
-                        type="tel"
-                        required
-                        value={formData.whatsappNumber}
-                        onChange={(e) =>
-                          handleInputChange("whatsappNumber", e.target.value)
-                        }
-                        className="mt-1"
-                        error={formErrors.whatsappNumber}
-                      />
-                      {formErrors.whatsappNumber && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.whatsappNumber}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="emailAddress">Email Address *</Label>
-                      <Input
-                        id="emailAddress"
-                        type="email"
-                        required
-                        value={formData.emailAddress}
-                        onChange={(e) =>
-                          handleInputChange("emailAddress", e.target.value)
-                        }
-                        className="mt-1"
-                        error={formErrors.emailAddress}
-                      />
-                      {formErrors.emailAddress && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.emailAddress}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="currentAddress">Current Address *</Label>
-                      <Input
-                        id="currentAddress"
-                        type="text"
-                        required
-                        value={formData.currentAddress}
-                        onChange={(e) =>
-                          handleInputChange("currentAddress", e.target.value)
-                        }
-                        className="mt-1"
-                        error={formErrors.currentAddress}
-                      />
-                      {formErrors.currentAddress && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.currentAddress}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2: Professional Information */}
-              {currentStep === 2 && (
-                <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
-                    Professional Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="positionAppliedFor">
-                        Position Applied For *
-                      </Label>
-                      <Select
-                        onValueChange={(value) =>
-                          handleInputChange("positionAppliedFor", value)
-                        }
-                        value={formData.positionAppliedFor}
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select a position" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="investment-analyst">
-                            Investment Analyst
-                          </SelectItem>
-                          <SelectItem value="property-manager">
-                            Property Manager
-                          </SelectItem>
-                          <SelectItem value="business-development">
-                            Business Development
-                          </SelectItem>
-                          <SelectItem value="finance-manager">
-                            Finance Manager
-                          </SelectItem>
-                          <SelectItem value="hr-specialist">
-                            HR Specialist
-                          </SelectItem>
-                          <SelectItem value="marketing-specialist">
-                            Marketing Specialist
-                          </SelectItem>
-                          <SelectItem value="operations-manager">
-                            Operations Manager
-                          </SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {formErrors.positionAppliedFor && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.positionAppliedFor}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="yearsOfExperience">
-                        Years of Experience *
-                      </Label>
-                      <Input
-                        id="yearsOfExperience"
-                        type="number"
-                        required
-                        value={formData.yearsOfExperience}
-                        onChange={(e) =>
-                          handleInputChange("yearsOfExperience", e.target.value)
-                        }
-                        className="mt-1"
-                        placeholder="e.g., 5"
-                        error={formErrors.yearsOfExperience}
-                      />
-                      {formErrors.yearsOfExperience && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.yearsOfExperience}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="currentLastPosition">
-                        Current/Last Position *
-                      </Label>
-                      <Input
-                        id="currentLastPosition"
-                        type="text"
-                        required
-                        value={formData.currentLastPosition}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "currentLastPosition",
-                            e.target.value
-                          )
-                        }
-                        className="mt-1"
-                        error={formErrors.currentLastPosition}
-                      />
-                      {formErrors.currentLastPosition && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.currentLastPosition}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="expectedSalary">
-                        Expected Salary (EGP) *
-                      </Label>
-                      <Input
-                        id="expectedSalary"
-                        type="number"
-                        required
-                        value={formData.expectedSalary}
-                        onChange={(e) =>
-                          handleInputChange("expectedSalary", e.target.value)
-                        }
-                        className="mt-1"
-                        placeholder="e.g., 15000"
-                        error={formErrors.expectedSalary}
-                      />
-                      {formErrors.expectedSalary && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.expectedSalary}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3: Skills & Qualifications */}
-              {currentStep === 3 && (
-                <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
-                    Skills & Qualifications
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="highestEducationLevel">
-                        Highest Education Level *
-                      </Label>
-                      <Select
-                        onValueChange={(value) =>
-                          handleInputChange("highestEducationLevel", value)
-                        }
-                        value={formData.highestEducationLevel}
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select education level" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="high-school">
-                            High School
-                          </SelectItem>
-                          <SelectItem value="diploma">Diploma</SelectItem>
-                          <SelectItem value="bachelor">
-                            Bachelor's Degree
-                          </SelectItem>
-                          <SelectItem value="master">
-                            Master's Degree
-                          </SelectItem>
-                          <SelectItem value="phd">PhD</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {formErrors.highestEducationLevel && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.highestEducationLevel}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="arabicProficiency">
-                        Arabic Proficiency *
-                      </Label>
-                      <Select
-                        onValueChange={(value) =>
-                          handleInputChange("arabicProficiency", value)
-                        }
-                        value={formData.arabicProficiency}
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select proficiency level" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="native">Native</SelectItem>
-                          <SelectItem value="fluent">Fluent</SelectItem>
-                          <SelectItem value="professional">
-                            Professional
-                          </SelectItem>
-                          <SelectItem value="intermediate">
-                            Intermediate
-                          </SelectItem>
-                          <SelectItem value="basic">Basic</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {formErrors.arabicProficiency && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.arabicProficiency}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="englishProficiency">
-                        English Proficiency *
-                      </Label>
-                      <Select
-                        onValueChange={(value) =>
-                          handleInputChange("englishProficiency", value)
-                        }
-                        value={formData.englishProficiency}
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select proficiency level" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="native">Native</SelectItem>
-                          <SelectItem value="fluent">Fluent</SelectItem>
-                          <SelectItem value="professional">
-                            Professional
-                          </SelectItem>
-                          <SelectItem value="intermediate">
-                            Intermediate
-                          </SelectItem>
-                          <SelectItem value="basic">Basic</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {formErrors.englishProficiency && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.englishProficiency}
-                        </p>
-                      )}
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label htmlFor="keySkills">
-                        Key Skills (comma-separated) *
-                      </Label>
-                      <Textarea
-                        id="keySkills"
-                        required
-                        value={formData.keySkills}
-                        onChange={(e) =>
-                          handleInputChange("keySkills", e.target.value)
-                        }
-                        className="mt-1"
-                        placeholder="e.g., Financial Analysis, Project Management, Communication, Excel, PowerPoint"
-                        rows={3}
-                        error={formErrors.keySkills}
-                      />
-                      {formErrors.keySkills && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {formErrors.keySkills}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Documents & Additional Info */}
-              {currentStep === 4 && (
-                <div className="space-y-6">
-                  <div>
+        <div id="application-form">
+          <Card className="shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-2xl text-gray-900" ref={formRef}>
+                Job Application Form
+              </CardTitle>
+              <CardDescription>
+                Please fill out all required fields. Fields marked with * are
+                mandatory.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Stepper />
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Step 1: Personal Information */}
+                {currentStep === 1 && (
+                  <div className="space-y-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
-                      Document Uploads
+                      Personal Information
                     </h3>
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="introVideoLink">
-                          Introduction Video Link (3 minutes max) - Optional
+                        <Label htmlFor="fullNameEnglish">
+                          Full Name (English) *
                         </Label>
                         <Input
-                          id="introVideoLink"
-                          type="url"
-                          value={formData.introVideoLink}
-                          onChange={(e) =>
-                            handleInputChange("introVideoLink", e.target.value)
-                          }
-                          className="mt-1"
-                          placeholder="https://youtube.com/watch?v=..."
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <FileUpload
-                            id="cvFile"
-                            accept=".pdf"
-                            required
-                            onChange={(file) =>
-                              handleFileChange("cvFile", file)
-                            }
-                            label="Upload CV"
-                            description="PDF format only"
-                            maxSize="5MB"
-                            value={formData.cvFile}
-                            error={formErrors.cvFile}
-                          />
-                          {formErrors.cvFile && (
-                            <p className="text-sm text-red-500 mt-1">
-                              {formErrors.cvFile}
-                            </p>
-                          )}
-                        </div>
-                        <div>
-                          <FileUpload
-                            id="profilePicture"
-                            accept="image/*"
-                            required
-                            onChange={(file) =>
-                              handleFileChange("profilePicture", file)
-                            }
-                            label="Profile Picture"
-                            description="Image format only"
-                            maxSize="2MB"
-                            value={formData.profilePicture}
-                            error={formErrors.profilePicture}
-                          />
-                          {formErrors.profilePicture && (
-                            <p className="text-sm text-red-500 mt-1">
-                              {formErrors.profilePicture}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <FileUpload
-                          id="certificationsFile"
-                          accept=".pdf,image/*"
-                          multiple
-                          onChange={(files) =>
-                            handleFileChange("certificationsFile", files)
-                          }
-                          label="Certifications (Optional)"
-                          description="PDF or Image formats"
-                          maxSize="10MB total"
-                          value={formData.certificationsFile}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
-                      Additional Information
-                    </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="noticePeriod">
-                          Notice Period (if currently employed)
-                        </Label>
-                        <Input
-                          id="noticePeriod"
+                          id="fullNameEnglish"
                           type="text"
-                          value={formData.noticePeriod}
+                          required
+                          value={formData.fullNameEnglish}
                           onChange={(e) =>
-                            handleInputChange("noticePeriod", e.target.value)
+                            handleInputChange("fullNameEnglish", e.target.value)
                           }
                           className="mt-1"
-                          placeholder="e.g., 1 month, 2 weeks, etc."
+                          error={formErrors.fullNameEnglish}
                         />
+                        {formErrors.fullNameEnglish && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.fullNameEnglish}
+                          </p>
+                        )}
                       </div>
                       <div>
-                        <Label htmlFor="joinReason">
-                          Why do you want to join Crystal Power Investments? *
+                        <Label htmlFor="fullNameArabic">
+                          Full Name (Arabic) *
                         </Label>
-                        <Textarea
-                          id="joinReason"
+                        <Input
+                          id="fullNameArabic"
+                          type="text"
                           required
-                          value={formData.joinReason}
+                          value={formData.fullNameArabic}
                           onChange={(e) =>
-                            handleInputChange("joinReason", e.target.value)
+                            handleInputChange("fullNameArabic", e.target.value)
                           }
                           className="mt-1"
-                          placeholder="Tell us what motivates you to join our team and how you can contribute to our success..."
-                          rows={4}
-                          error={formErrors.joinReason}
+                          error={formErrors.fullNameArabic}
                         />
-                        {formErrors.joinReason && (
+                        {formErrors.fullNameArabic && (
                           <p className="text-sm text-red-500 mt-1">
-                            {formErrors.joinReason}
+                            {formErrors.fullNameArabic}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="nationalId">National ID *</Label>
+                        <Input
+                          id="nationalId"
+                          type="text"
+                          required
+                          value={formData.nationalId}
+                          onChange={(e) =>
+                            handleInputChange("nationalId", e.target.value)
+                          }
+                          className="mt-1"
+                          error={formErrors.nationalId}
+                        />
+                        {formErrors.nationalId && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.nationalId}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                        <Input
+                          id="dateOfBirth"
+                          type="date"
+                          required
+                          value={formData.dateOfBirth}
+                          onChange={(e) =>
+                            handleInputChange("dateOfBirth", e.target.value)
+                          }
+                          className="mt-1"
+                          error={formErrors.dateOfBirth}
+                        />
+                        {formErrors.dateOfBirth && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.dateOfBirth}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="mobileNumber">Mobile Number *</Label>
+                        <Input
+                          id="mobileNumber"
+                          type="tel"
+                          required
+                          value={formData.mobileNumber}
+                          onChange={(e) =>
+                            handleInputChange("mobileNumber", e.target.value)
+                          }
+                          className="mt-1"
+                          error={formErrors.mobileNumber}
+                        />
+                        {formErrors.mobileNumber && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.mobileNumber}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="whatsappNumber">
+                          WhatsApp Number *
+                        </Label>
+                        <Input
+                          id="whatsappNumber"
+                          type="tel"
+                          required
+                          value={formData.whatsappNumber}
+                          onChange={(e) =>
+                            handleInputChange("whatsappNumber", e.target.value)
+                          }
+                          className="mt-1"
+                          error={formErrors.whatsappNumber}
+                        />
+                        {formErrors.whatsappNumber && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.whatsappNumber}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="emailAddress">Email Address *</Label>
+                        <Input
+                          id="emailAddress"
+                          type="email"
+                          required
+                          value={formData.emailAddress}
+                          onChange={(e) =>
+                            handleInputChange("emailAddress", e.target.value)
+                          }
+                          className="mt-1"
+                          error={formErrors.emailAddress}
+                        />
+                        {formErrors.emailAddress && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.emailAddress}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="currentAddress">
+                          Current Address *
+                        </Label>
+                        <Input
+                          id="currentAddress"
+                          type="text"
+                          required
+                          value={formData.currentAddress}
+                          onChange={(e) =>
+                            handleInputChange("currentAddress", e.target.value)
+                          }
+                          className="mt-1"
+                          error={formErrors.currentAddress}
+                        />
+                        {formErrors.currentAddress && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.currentAddress}
                           </p>
                         )}
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-between pt-6">
-                {currentStep > 1 ? (
-                  <Button
-                    type="button"
-                    onClick={prevStep}
-                    variant="outline"
-                    className="flex items-center cursor-pointer"
-                  >
-                    <ChevronLeft className="w-5 h-5 mr-2" />
-                    Back
-                  </Button>
-                ) : (
-                  <div></div> // Empty div to maintain space
                 )}
 
-                {currentStep < 4 ? (
-                  <Button
-                    type="button"
-                    onClick={nextStep}
-                    className="flex items-center bg-gray-900 hover:bg-gray-800 cursor-pointer"
-                  >
-                    Next
-                    <ChevronRight className="w-5 h-5 ml-2" />
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    className="bg-gray-900 hover:bg-gray-800 text-white py-3 text-lg font-semibold cursor-pointer"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <span className="flex items-center">
-                        <svg
-                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
+                {/* Step 2: Professional Information */}
+                {currentStep === 2 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                      Professional Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="positionAppliedFor">
+                          Position Applied For *
+                        </Label>
+                        <Select
+                          onValueChange={(value) =>
+                            handleInputChange("positionAppliedFor", value)
+                          }
+                          value={formData.positionAppliedFor}
                         >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Submitting...
-                      </span>
-                    ) : (
-                      <>
-                        Submit Application
-                        <Upload className="ml-2 w-5 h-5" />
-                      </>
-                    )}
-                  </Button>
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Select a position" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="investment-analyst">
+                              Investment Analyst
+                            </SelectItem>
+                            <SelectItem value="property-manager">
+                              Property Manager
+                            </SelectItem>
+                            <SelectItem value="business-development">
+                              Business Development
+                            </SelectItem>
+                            <SelectItem value="finance-manager">
+                              Finance Manager
+                            </SelectItem>
+                            <SelectItem value="hr-specialist">
+                              HR Specialist
+                            </SelectItem>
+                            <SelectItem value="marketing-specialist">
+                              Marketing Specialist
+                            </SelectItem>
+                            <SelectItem value="operations-manager">
+                              Operations Manager
+                            </SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {formErrors.positionAppliedFor && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.positionAppliedFor}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="yearsOfExperience">
+                          Years of Experience *
+                        </Label>
+                        <Input
+                          id="yearsOfExperience"
+                          type="number"
+                          required
+                          value={formData.yearsOfExperience}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "yearsOfExperience",
+                              e.target.value
+                            )
+                          }
+                          className="mt-1"
+                          placeholder="e.g., 5"
+                          error={formErrors.yearsOfExperience}
+                        />
+                        {formErrors.yearsOfExperience && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.yearsOfExperience}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="currentLastPosition">
+                          Current/Last Position *
+                        </Label>
+                        <Input
+                          id="currentLastPosition"
+                          type="text"
+                          required
+                          value={formData.currentLastPosition}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "currentLastPosition",
+                              e.target.value
+                            )
+                          }
+                          className="mt-1"
+                          error={formErrors.currentLastPosition}
+                        />
+                        {formErrors.currentLastPosition && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.currentLastPosition}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="expectedSalary">
+                          Expected Salary (EGP) *
+                        </Label>
+                        <Input
+                          id="expectedSalary"
+                          type="number"
+                          required
+                          value={formData.expectedSalary}
+                          onChange={(e) =>
+                            handleInputChange("expectedSalary", e.target.value)
+                          }
+                          className="mt-1"
+                          placeholder="e.g., 15000"
+                          error={formErrors.expectedSalary}
+                        />
+                        {formErrors.expectedSalary && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.expectedSalary}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 )}
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+
+                {/* Step 3: Skills & Qualifications */}
+                {currentStep === 3 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                      Skills & Qualifications
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="highestEducationLevel">
+                          Highest Education Level *
+                        </Label>
+                        <Select
+                          onValueChange={(value) =>
+                            handleInputChange("highestEducationLevel", value)
+                          }
+                          value={formData.highestEducationLevel}
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Select education level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="high-school">
+                              High School
+                            </SelectItem>
+                            <SelectItem value="diploma">Diploma</SelectItem>
+                            <SelectItem value="bachelor">
+                              Bachelor's Degree
+                            </SelectItem>
+                            <SelectItem value="master">
+                              Master's Degree
+                            </SelectItem>
+                            <SelectItem value="phd">PhD</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {formErrors.highestEducationLevel && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.highestEducationLevel}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="arabicProficiency">
+                          Arabic Proficiency *
+                        </Label>
+                        <Select
+                          onValueChange={(value) =>
+                            handleInputChange("arabicProficiency", value)
+                          }
+                          value={formData.arabicProficiency}
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Select proficiency level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="native">Native</SelectItem>
+                            <SelectItem value="fluent">Fluent</SelectItem>
+                            <SelectItem value="professional">
+                              Professional
+                            </SelectItem>
+                            <SelectItem value="intermediate">
+                              Intermediate
+                            </SelectItem>
+                            <SelectItem value="basic">Basic</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {formErrors.arabicProficiency && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.arabicProficiency}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="englishProficiency">
+                          English Proficiency *
+                        </Label>
+                        <Select
+                          onValueChange={(value) =>
+                            handleInputChange("englishProficiency", value)
+                          }
+                          value={formData.englishProficiency}
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Select proficiency level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="native">Native</SelectItem>
+                            <SelectItem value="fluent">Fluent</SelectItem>
+                            <SelectItem value="professional">
+                              Professional
+                            </SelectItem>
+                            <SelectItem value="intermediate">
+                              Intermediate
+                            </SelectItem>
+                            <SelectItem value="basic">Basic</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {formErrors.englishProficiency && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.englishProficiency}
+                          </p>
+                        )}
+                      </div>
+                      <div className="md:col-span-2">
+                        <Label htmlFor="keySkills">
+                          Key Skills (comma-separated) *
+                        </Label>
+                        <Textarea
+                          id="keySkills"
+                          required
+                          value={formData.keySkills}
+                          onChange={(e) =>
+                            handleInputChange("keySkills", e.target.value)
+                          }
+                          className="mt-1"
+                          placeholder="e.g., Financial Analysis, Project Management, Communication, Excel, PowerPoint"
+                          rows={3}
+                          error={formErrors.keySkills}
+                        />
+                        {formErrors.keySkills && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {formErrors.keySkills}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 4: Documents & Additional Info */}
+                {currentStep === 4 && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                        Document Uploads
+                      </h3>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="introVideoLink">
+                            Introduction Video Link (3 minutes max) - Optional
+                          </Label>
+                          <Input
+                            id="introVideoLink"
+                            type="url"
+                            value={formData.introVideoLink}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "introVideoLink",
+                                e.target.value
+                              )
+                            }
+                            className="mt-1"
+                            placeholder="https://youtube.com/watch?v=..."
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <FileUpload
+                              id="cvFile"
+                              accept=".pdf"
+                              required
+                              onChange={(file) =>
+                                handleFileChange("cvFile", file)
+                              }
+                              label="Upload CV"
+                              description="PDF format only"
+                              maxSize="5MB"
+                              value={formData.cvFile}
+                              error={formErrors.cvFile}
+                            />
+                            {formErrors.cvFile && (
+                              <p className="text-sm text-red-500 mt-1">
+                                {formErrors.cvFile}
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <FileUpload
+                              id="profilePicture"
+                              accept="image/*"
+                              required
+                              onChange={(file) =>
+                                handleFileChange("profilePicture", file)
+                              }
+                              label="Profile Picture"
+                              description="Image format only"
+                              maxSize="2MB"
+                              value={formData.profilePicture}
+                              error={formErrors.profilePicture}
+                            />
+                            {formErrors.profilePicture && (
+                              <p className="text-sm text-red-500 mt-1">
+                                {formErrors.profilePicture}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <FileUpload
+                            id="certificationsFile"
+                            accept=".pdf,image/*"
+                            multiple
+                            onChange={(files) =>
+                              handleFileChange("certificationsFile", files)
+                            }
+                            label="Certifications (Optional)"
+                            description="PDF or Image formats"
+                            maxSize="10MB total"
+                            value={formData.certificationsFile}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                        Additional Information
+                      </h3>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="noticePeriod">
+                            Notice Period (if currently employed)
+                          </Label>
+                          <Input
+                            id="noticePeriod"
+                            type="text"
+                            value={formData.noticePeriod}
+                            onChange={(e) =>
+                              handleInputChange("noticePeriod", e.target.value)
+                            }
+                            className="mt-1"
+                            placeholder="e.g., 1 month, 2 weeks, etc."
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="joinReason">
+                            Why do you want to join Crystal Power Investments? *
+                          </Label>
+                          <Textarea
+                            id="joinReason"
+                            required
+                            value={formData.joinReason}
+                            onChange={(e) =>
+                              handleInputChange("joinReason", e.target.value)
+                            }
+                            className="mt-1"
+                            placeholder="Tell us what motivates you to join our team and how you can contribute to our success..."
+                            rows={4}
+                            error={formErrors.joinReason}
+                          />
+                          {formErrors.joinReason && (
+                            <p className="text-sm text-red-500 mt-1">
+                              {formErrors.joinReason}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-between pt-6">
+                  {currentStep > 1 ? (
+                    <Button
+                      type="button"
+                      onClick={prevStep}
+                      variant="outline"
+                      className="flex items-center cursor-pointer"
+                    >
+                      <ChevronLeft className="w-5 h-5 mr-2" />
+                      Back
+                    </Button>
+                  ) : (
+                    <div></div> // Empty div to maintain space
+                  )}
+
+                  {currentStep < 4 ? (
+                    <Button
+                      type="button"
+                      onClick={nextStep}
+                      className="flex items-center bg-gray-900 hover:bg-gray-800 cursor-pointer"
+                    >
+                      Next
+                      <ChevronRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  ) : (
+                    <Button
+                      type="submit"
+                      className="bg-gray-900 hover:bg-gray-800 text-white py-3 text-lg font-semibold cursor-pointer"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <span className="flex items-center">
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Submitting...
+                        </span>
+                      ) : (
+                        <>
+                          Submit Application
+                          <Upload className="ml-2 w-5 h-5" />
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

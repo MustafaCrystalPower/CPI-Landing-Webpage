@@ -22,7 +22,7 @@ const Footer = () => {
   ];
 
   const businessSectors = [
-    { name: "School Catering", href: "#" },
+    { name: "School Catering", href: "https://jswvajgj.manus.space/" },
     { name: "Hawana Café", href: "#" },
     { name: "Property Investment", href: "#" },
   ];
@@ -126,6 +126,7 @@ const Footer = () => {
                 <li key={sector.name}>
                   <a
                     href={sector.href}
+                    target="_blank"
                     className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center space-x-2"
                   >
                     <Building2 className="w-4 h-4" />

@@ -21,6 +21,8 @@ const Contact = () => {
     message: "",
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [showPhoneNumber, setShowPhoneNumber] = useState(false);
 
   const handleInputChange = (field, value) => {
@@ -30,11 +32,39 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
-    console.log("Contact form submitted:", formData);
-    setIsSubmitted(true);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit form");
+      }
+
+      setIsSubmitted(true);
+      // Reset form after successful submission
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const contactInfo = [
@@ -47,22 +77,19 @@ const Contact = () => {
     {
       icon: <Phone className="w-6 h-6" />,
       title: "Phone Numbers",
-      details: ["+201066505665", "+201005288884"],
+      details: ["+201066505665", "+201005288884", "+201123030801"],
       color: "bg-green-500",
     },
     {
       icon: <Mail className="w-6 h-6" />,
       title: "Email Address",
-      details: ["info@crystalpowerinvestments.com"],
+      details: ["info@crystalpowerinvestment.com"],
       color: "bg-purple-500",
     },
     {
       icon: <Clock className="w-6 h-6" />,
       title: "Business Hours",
-      details: [
-        "Sunday - Thursday: 9:00 AM - 6:00 PM",
-        "Friday - Saturday: Closed",
-      ],
+      details: ["Saturday - Thursday: 11:00 AM - 6:00 PM", "Friday: Closed"],
       color: "bg-orange-500",
     },
   ];
@@ -147,12 +174,10 @@ const Contact = () => {
               ))}
             </div>
 
-            {/* Map Section - Made wider and centered */}
+            {/* Map Section */}
             <Card className="overflow-hidden">
               <CardContent className="p-0">
                 <div className="h-96 w-full">
-                  {" "}
-                  {/* Increased height and full width */}
                   <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3456.8234567890123!2d31.0380922!3d29.9732775!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145851007d55230b%3A0xeda3ac69eb1ee137!2sGTA9!5e0!3m2!1sen!2seg!4v1640995200000!5m2!1sen!2seg"
                     width="100%"
@@ -162,7 +187,7 @@ const Contact = () => {
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                     title="Crystal Power Investments Location"
-                    className="mx-auto" // Center the map
+                    className="mx-auto"
                   ></iframe>
                 </div>
               </CardContent>
@@ -182,6 +207,11 @@ const Contact = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {error && (
+                  <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                    {error}
+                  </div>
+                )}
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -261,10 +291,17 @@ const Contact = () => {
 
                   <Button
                     type="submit"
-                    className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 text-lg font-semibold cursor-pointer" // Added cursor-pointer
+                    className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 text-lg font-semibold cursor-pointer"
+                    disabled={isLoading}
                   >
-                    Send Message
-                    <Send className="ml-2 w-5 h-5" />
+                    {isLoading ? (
+                      "Sending..."
+                    ) : (
+                      <>
+                        Send Message
+                        <Send className="ml-2 w-5 h-5" />
+                      </>
+                    )}
                   </Button>
                 </form>
               </CardContent>
@@ -318,22 +355,20 @@ const Contact = () => {
               {!showPhoneNumber ? (
                 <Button
                   onClick={() => setShowPhoneNumber(true)}
-                  className="bg-white text-gray-900 hover:bg-gray-100 cursor-pointer" // Added cursor-pointer
+                  className="bg-white text-gray-900 hover:bg-gray-100 cursor-pointer"
                 >
                   Schedule Consultation
                 </Button>
               ) : (
                 <div className="bg-white bg-opacity-10 rounded-lg p-6 max-w-md mx-auto">
                   <h3 className="text-lg font-semibold mb-2 text-black">
-                    {" "}
-                    {/* Changed to black text */}
                     Call us to schedule your consultation:
                   </h3>
                   <div className="flex items-center justify-center space-x-2 text-2xl font-bold">
                     <Phone className="w-6 h-6" />
                     <a
                       href="tel:+201066505665"
-                      className="hover:text-gray-300 transition-colors text-black" // Changed to black text
+                      className="hover:text-gray-300 transition-colors text-black"
                     >
                       +201066505665
                     </a>
