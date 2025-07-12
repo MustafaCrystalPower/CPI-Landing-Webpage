@@ -444,7 +444,9 @@ const JobPostingsSection = () => {
   useEffect(() => {
     const fetchJobPostings = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/job-postings");
+        const response = await fetch(
+          "https://cpi-landing-webpage-backend-production.up.railway.app/api/job-postings"
+        );
         if (!response.ok) throw new Error("Failed to fetch job postings");
         const data = await response.json();
         setJobPostings(data);
