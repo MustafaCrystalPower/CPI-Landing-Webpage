@@ -29,6 +29,8 @@ import {
 import FileUpload from "@/components/ui/file-upload";
 import { toast } from "sonner";
 import JobPostingsSection from "@/components/jobListings";
+import { format } from "date-fns";
+import InterviewScheduler from "./InterviewScheduler";
 
 const Careers = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -69,6 +71,7 @@ const Careers = () => {
 
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedInterviewSlot, setSelectedInterviewSlot] = useState(null);
 
   // Validate current step before proceeding
   const validateStep = (step) => {
@@ -144,12 +147,9 @@ const Careers = () => {
 
   const nextStep = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep((prev) => Math.min(prev + 1, 4));
+      setCurrentStep((prev) => Math.min(prev + 1, 5));
     } else {
-      toast.error("Please complete all required fields before proceeding", {
-        position: "top-center",
-        duration: 3000,
-      });
+      toast.error("Please complete all required fields before proceeding");
     }
   };
 
@@ -159,22 +159,62 @@ const Careers = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!selectedInterviewSlot) {
+      toast.error("Please select an interview slot");
+      return;
+    }
+
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    if (!validateStep(4)) {
-      toast.error("Please complete all required fields before submitting", {
-        position: "top-center",
-        duration: 3000,
-      });
+    // Validate all steps (1-4)
+    let isValid = true;
+    for (let step = 1; step <= 4; step++) {
+      if (!validateStep(step)) {
+        isValid = false;
+        break;
+      }
+    }
+
+    if (!isValid) {
+      toast.error("Please complete all required fields before submitting");
+      setIsSubmitting(false);
       return;
     }
 
     try {
-      // Create FormData object
+      // First, book the interview slot
+      const bookingResponse = await fetch(
+        "http://cpi-landing-webpage-backend-production.up.railway.app/api/interview-slots/book",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            date: selectedInterviewSlot.date,
+            time: selectedInterviewSlot.time,
+            applicantEmail: formData.emailAddress,
+            applicantName: formData.fullNameEnglish,
+          }),
+        }
+      );
+
+      if (!bookingResponse.ok) {
+        const errorData = await bookingResponse.json();
+        throw new Error(errorData.error || "Failed to book interview slot");
+      }
+
+      const bookingData = await bookingResponse.json();
+      const slotId = bookingData.slot?.id;
+
+      if (!slotId) throw new Error("Slot ID not returned from booking API");
+
+      // Then submit the application
       const formDataToSend = new FormData();
 
-      // Append all text fields
+      // Append all form data (existing code)
       Object.keys(formData).forEach((key) => {
         if (
           key !== "cvFile" &&
@@ -185,7 +225,16 @@ const Careers = () => {
         }
       });
 
-      // Append files
+      // Include the booked slot Data
+      formDataToSend.append("interviewSlotDate", selectedInterviewSlot.date);
+      formDataToSend.append("interviewSlotTime", selectedInterviewSlot.time);
+      formDataToSend.append("interviewSlotId", slotId);
+
+      console.log(selectedInterviewSlot.date);
+      console.log(selectedInterviewSlot.time);
+      console.log(slotId);
+
+      // Append files (existing code)
       if (formData.cvFile) {
         formDataToSend.append("cvFile", formData.cvFile);
       }
@@ -205,31 +254,34 @@ const Careers = () => {
         }
       }
 
-      // Send to PRODUCTION backend
-      const response = await fetch(
-        `https://cpi-landing-webpage-backend-production.up.railway.app/api/applications`,
+      const applicationResponse = await fetch(
+        "http://cpi-landing-webpage-backend-production.up.railway.app/api/applications",
         {
           method: "POST",
           body: formDataToSend,
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to submit application");
+      if (!applicationResponse.ok) {
+        throw new Error("Failed to submit application");
       }
 
-      toast.success("Application submitted successfully!", {
-        position: "top-center",
-        duration: 3000,
-      });
+      toast.success("Application submitted successfully!");
       setIsSubmitted(true);
     } catch (error) {
       console.error("Submission error:", error);
-      toast.error(error.message || "Failed to submit application", {
-        position: "top-center",
-        duration: 3000,
-      });
+
+      // Specific error message for booking failures
+      if (error.message.includes("Slot not available")) {
+        toast.error(
+          "The selected slot was just booked by someone else. Please choose another slot."
+        );
+        // Refresh available slots
+        setSelectedInterviewSlot(null);
+        // You might want to force a refetch of slots here
+      } else {
+        toast.error(error.message || "Failed to submit application");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -304,7 +356,7 @@ const Careers = () => {
   const Stepper = () => (
     <div className="mb-6 md:mb-8">
       <div className="flex items-center justify-between">
-        {[1, 2, 3, 4].map((step) => (
+        {[1, 2, 3, 4, 5].map((step) => (
           <div key={step} className="flex flex-col items-center relative z-10">
             <div
               className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-sm md:text-base ${
@@ -326,6 +378,7 @@ const Careers = () => {
               {step === 2 && "Professional"}
               {step === 3 && "Skills"}
               {step === 4 && "Documents"}
+              {step === 5 && "Interview"}
             </span>
           </div>
         ))}
@@ -334,7 +387,7 @@ const Careers = () => {
         <div className="absolute top-4 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
         <div
           className="absolute top-4 left-0 h-1 bg-gray-900 transition-all duration-300"
-          style={{ width: `${(currentStep - 1) * 33.33}%` }}
+          style={{ width: `${(currentStep - 1) * 25}%` }} // Changed to 25% for 5 steps
         ></div>
       </div>
     </div>
@@ -562,7 +615,6 @@ const Careers = () => {
                     </div>
                   </div>
                 )}
-
                 {/* Step 2: Professional Information */}
                 {currentStep === 2 && (
                   <div className="space-y-6">
@@ -584,26 +636,29 @@ const Careers = () => {
                             <SelectValue placeholder="Select a position" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="investment-analyst">
+                            <SelectItem value="Investment-Analyst">
                               Investment Analyst
                             </SelectItem>
-                            <SelectItem value="property-manager">
-                              Property Manager
+                            <SelectItem value="Executive-Assistant">
+                              Executive Assistant
                             </SelectItem>
-                            <SelectItem value="business-development">
-                              Business Development
+                            <SelectItem value="School-Catering-Manager">
+                              School Catering Manager
                             </SelectItem>
-                            <SelectItem value="finance-manager">
-                              Finance Manager
-                            </SelectItem>
-                            <SelectItem value="hr-specialist">
-                              HR Specialist
-                            </SelectItem>
-                            <SelectItem value="marketing-specialist">
+                            <SelectItem value="Marketing-Specialist">
                               Marketing Specialist
                             </SelectItem>
-                            <SelectItem value="operations-manager">
-                              Operations Manager
+                            <SelectItem value="Graphic-Designer">
+                              Graphic Designer
+                            </SelectItem>
+                            <SelectItem value="Software-Developer">
+                              Software Developer
+                            </SelectItem>
+                            <SelectItem value="Cafe Manager">
+                              Cafe Manager
+                            </SelectItem>
+                            <SelectItem value="HR-Talent-Aquisition">
+                              HR Talent Aquisition
                             </SelectItem>
                             <SelectItem value="other">Other</SelectItem>
                           </SelectContent>
@@ -688,7 +743,6 @@ const Careers = () => {
                     </div>
                   </div>
                 )}
-
                 {/* Step 3: Skills & Qualifications */}
                 {currentStep === 3 && (
                   <div className="space-y-6">
@@ -949,6 +1003,31 @@ const Careers = () => {
                   </div>
                 )}
 
+                {/* Step 5: Interview Scheduler */}
+                {currentStep === 5 && (
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
+                      Schedule Your Interview
+                    </h3>
+                    <InterviewScheduler
+                      onSlotSelect={setSelectedInterviewSlot}
+                    />
+
+                    {selectedInterviewSlot && (
+                      <div className="p-4 bg-blue-50 rounded-md">
+                        <p className="font-medium">Selected Interview Slot:</p>
+                        <p>
+                          {format(
+                            new Date(selectedInterviewSlot.date),
+                            "EEEE, MMMM d, yyyy"
+                          )}
+                        </p>
+                        <p>Time: {selectedInterviewSlot.time}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Navigation Buttons */}
                 <div className="flex justify-between pt-6">
                   {currentStep > 1 ? (
@@ -962,10 +1041,10 @@ const Careers = () => {
                       Back
                     </Button>
                   ) : (
-                    <div></div> // Empty div to maintain space
+                    <div></div>
                   )}
 
-                  {currentStep < 4 ? (
+                  {currentStep < 5 ? (
                     <Button
                       type="button"
                       onClick={nextStep}
@@ -978,7 +1057,7 @@ const Careers = () => {
                     <Button
                       type="submit"
                       className="bg-gray-900 hover:bg-gray-800 text-white py-3 text-lg font-semibold cursor-pointer"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || !selectedInterviewSlot}
                     >
                       {isSubmitting ? (
                         <span className="flex items-center">
