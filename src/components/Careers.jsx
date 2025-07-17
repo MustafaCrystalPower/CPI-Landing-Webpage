@@ -157,6 +157,7 @@ const Careers = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
+  // Replace the existing handleSubmit function
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -184,37 +185,10 @@ const Careers = () => {
     }
 
     try {
-      // First, book the interview slot
-      const bookingResponse = await fetch(
-        "http://cpi-landing-webpage-backend-production.up.railway.app/api/interview-slots/book",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            date: selectedInterviewSlot.date,
-            time: selectedInterviewSlot.time,
-            applicantEmail: formData.emailAddress,
-            applicantName: formData.fullNameEnglish,
-          }),
-        }
-      );
-
-      if (!bookingResponse.ok) {
-        const errorData = await bookingResponse.json();
-        throw new Error(errorData.error || "Failed to book interview slot");
-      }
-
-      const bookingData = await bookingResponse.json();
-      const slotId = bookingData.slot?.id;
-
-      if (!slotId) throw new Error("Slot ID not returned from booking API");
-
-      // Then submit the application
+      // Create form data for submission
       const formDataToSend = new FormData();
 
-      // Append all form data (existing code)
+      // Append all form data
       Object.keys(formData).forEach((key) => {
         if (
           key !== "cvFile" &&
@@ -225,16 +199,16 @@ const Careers = () => {
         }
       });
 
-      // Include the booked slot Data
+      // Include the selected interview slot data
       formDataToSend.append("interviewSlotDate", selectedInterviewSlot.date);
       formDataToSend.append("interviewSlotTime", selectedInterviewSlot.time);
-      formDataToSend.append("interviewSlotId", slotId);
+      formDataToSend.append("interviewSlotId", selectedInterviewSlot.id);
 
-      console.log(selectedInterviewSlot.date);
-      console.log(selectedInterviewSlot.time);
-      console.log(slotId);
+      console.log({ interviewSlotDate: selectedInterviewSlot.date });
+      console.log({ interviewSlotTime: selectedInterviewSlot.time });
+      console.log({ interviewId: selectedInterviewSlot.id });
 
-      // Append files (existing code)
+      // Append files
       if (formData.cvFile) {
         formDataToSend.append("cvFile", formData.cvFile);
       }
@@ -254,8 +228,9 @@ const Careers = () => {
         }
       }
 
+      // Submit the application
       const applicationResponse = await fetch(
-        "http://cpi-landing-webpage-backend-production.up.railway.app/api/applications",
+        "https://cpi-landing-webpage-backend-production.up.railway.app/api/applications",
         {
           method: "POST",
           body: formDataToSend,
@@ -266,22 +241,33 @@ const Careers = () => {
         throw new Error("Failed to submit application");
       }
 
+      // After successful application submission, book the interview slot
+      const bookingResponse = await fetch(
+        "https://cpi-landing-webpage-backend-production.up.railway.app/api/interview-slots/book",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            date: selectedInterviewSlot.date,
+            time: selectedInterviewSlot.time,
+            applicantEmail: formData.emailAddress,
+            applicantName: formData.fullNameEnglish,
+          }),
+        }
+      );
+
+      if (!bookingResponse.ok) {
+        const errorData = await bookingResponse.json();
+        throw new Error(errorData.error || "Failed to book interview slot");
+      }
+
       toast.success("Application submitted successfully!");
       setIsSubmitted(true);
     } catch (error) {
       console.error("Submission error:", error);
-
-      // Specific error message for booking failures
-      if (error.message.includes("Slot not available")) {
-        toast.error(
-          "The selected slot was just booked by someone else. Please choose another slot."
-        );
-        // Refresh available slots
-        setSelectedInterviewSlot(null);
-        // You might want to force a refetch of slots here
-      } else {
-        toast.error(error.message || "Failed to submit application");
-      }
+      toast.error(error.message || "Failed to submit application");
     } finally {
       setIsSubmitting(false);
     }
@@ -1010,7 +996,10 @@ const Careers = () => {
                       Schedule Your Interview
                     </h3>
                     <InterviewScheduler
-                      onSlotSelect={setSelectedInterviewSlot}
+                      onSlotSelect={(slot) => {
+                        console.log("Received slot data:", slot); // Add this line
+                        setSelectedInterviewSlot(slot);
+                      }}
                     />
 
                     {selectedInterviewSlot && (
