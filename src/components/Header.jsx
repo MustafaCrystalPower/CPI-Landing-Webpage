@@ -89,21 +89,22 @@ const Header = () => {
   };
 
   const isActive = (path) => {
-    // For non-home pages
-    if (!path.includes("#") && location.pathname === path) return true;
+    // For non-home pages (Careers, Contact)
+    if (!path.includes("#") && path !== "/" && location.pathname === path) {
+      return true;
+    }
 
-    // For home page
+    // For home page - only active when at top with no active section
     if (path === "/") {
-      // Only active if we're at the very top with no active section
       return location.pathname === "/" && activeSection === null;
     }
 
-    // For home page sections
+    // For home page sections - only active when that specific section is active
     if (path === "/#about") {
-      return activeSection === "about";
+      return location.pathname === "/" && activeSection === "about";
     }
     if (path === "/#services") {
-      return activeSection === "services";
+      return location.pathname === "/" && activeSection === "services";
     }
 
     return false;

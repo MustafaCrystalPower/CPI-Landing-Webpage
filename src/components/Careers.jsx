@@ -204,10 +204,6 @@ const Careers = () => {
       formDataToSend.append("interviewSlotTime", selectedInterviewSlot.time);
       formDataToSend.append("interviewSlotId", selectedInterviewSlot.id);
 
-      console.log({ interviewSlotDate: selectedInterviewSlot.date });
-      console.log({ interviewSlotTime: selectedInterviewSlot.time });
-      console.log({ interviewId: selectedInterviewSlot.id });
-
       // Append files
       if (formData.cvFile) {
         formDataToSend.append("cvFile", formData.cvFile);
@@ -266,7 +262,6 @@ const Careers = () => {
       toast.success("Application submitted successfully!");
       setIsSubmitted(true);
     } catch (error) {
-      console.error("Submission error:", error);
       toast.error(error.message || "Failed to submit application");
     } finally {
       setIsSubmitting(false);
@@ -997,7 +992,6 @@ const Careers = () => {
                     </h3>
                     <InterviewScheduler
                       onSlotSelect={(slot) => {
-                        console.log("Received slot data:", slot); // Add this line
                         setSelectedInterviewSlot(slot);
                       }}
                     />

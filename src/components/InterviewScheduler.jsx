@@ -45,7 +45,6 @@ const InterviewScheduler = ({ onSlotSelect }) => {
         if (!response.ok) throw new Error("Failed to fetch slots");
 
         const data = await response.json();
-        console.log("Fetched slots data:", data); // Add this line
         setSlots(data);
       } catch (error) {
         toast.error(error.message);
@@ -98,7 +97,7 @@ const InterviewScheduler = ({ onSlotSelect }) => {
     }
 
     toast.success(
-      "Interview slot selected. Click 'Submit Application' when you're ready."
+      "Interview slot selected."
     );
   };
 
