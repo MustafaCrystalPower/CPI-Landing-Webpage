@@ -191,7 +191,7 @@ const ROICalculator = () => {
 
     try {
       const response = await fetch(
-        "http://cpi-landing-webpage-backend-production.up.railway.app/api/tools/calculateRoi",
+        "https://cpi-landing-webpage-backend-production.up.railway.app/api/tools/calculateRoi",
         {
           method: "POST",
           headers: {
