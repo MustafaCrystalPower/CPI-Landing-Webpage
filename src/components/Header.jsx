@@ -1,21 +1,52 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Menu, X, ChevronDown, ChevronUp, Calculator } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import cpiLogo from "../assets/cpi-logo.jpeg";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(null);
+  const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState(false);
+  const [desktopSubmenuOpen, setDesktopSubmenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const toolsMenuRef = useRef(null);
 
   const navigation = [
     { name: "Home", href: "/" },
     { name: "About Us", href: "/#about" },
     { name: "Services", href: "/#services" },
+    {
+      name: "Tools",
+      href: "#",
+      submenu: [
+        {
+          name: "ROI Calculator",
+          href: "/roi-calculator",
+          icon: <Calculator className="w-4 h-4 mr-2" />,
+        },
+      ],
+    },
     { name: "Careers", href: "/careers" },
     { name: "Contact", href: "/contact" },
   ];
+
+  // Handle click outside for desktop submenu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        toolsMenuRef.current &&
+        !toolsMenuRef.current.contains(event.target)
+      ) {
+        setDesktopSubmenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Handle scroll to detect active section
   useEffect(() => {
@@ -27,7 +58,6 @@ const Header = () => {
 
         // Reset active section when at top of page
         if (scrollPosition < 150) {
-          // Increased threshold for better UX
           setActiveSection(null);
           return;
         }
@@ -42,9 +72,7 @@ const Header = () => {
         }
       };
 
-      // Run once on mount to set initial state
       handleScroll();
-
       window.addEventListener("scroll", handleScroll);
       return () => window.removeEventListener("scroll", handleScroll);
     } else {
@@ -56,26 +84,22 @@ const Header = () => {
     if (href === "/") {
       e.preventDefault();
       if (location.pathname === "/") {
-        // Scroll to top if already on home page
         window.scrollTo({ top: 0, behavior: "smooth" });
         setActiveSection(null);
       } else {
-        // Navigate to home if not already there
         navigate("/");
       }
     } else if (href.startsWith("/#")) {
       e.preventDefault();
       const sectionId = href.split("#")[1];
-      setActiveSection(sectionId); // Immediately set active section
+      setActiveSection(sectionId);
 
       if (location.pathname === "/") {
-        // Scroll to section if on home page
         const section = document.getElementById(sectionId);
         if (section) {
           section.scrollIntoView({ behavior: "smooth" });
         }
       } else {
-        // Navigate to home then scroll to section
         navigate("/");
         setTimeout(() => {
           const section = document.getElementById(sectionId);
@@ -84,22 +108,24 @@ const Header = () => {
           }
         }, 100);
       }
+    } else if (href === "#") {
+      e.preventDefault();
+      return;
     }
     setIsMenuOpen(false);
+    setMobileSubmenuOpen(false);
+    setDesktopSubmenuOpen(false);
   };
 
   const isActive = (path) => {
-    // For non-home pages (Careers, Contact)
     if (!path.includes("#") && path !== "/" && location.pathname === path) {
       return true;
     }
 
-    // For home page - only active when at top with no active section
     if (path === "/") {
       return location.pathname === "/" && activeSection === null;
     }
 
-    // For home page sections - only active when that specific section is active
     if (path === "/#about") {
       return location.pathname === "/" && activeSection === "about";
     }
@@ -144,20 +170,73 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex items-center space-x-2">
             {navigation.map((item) => (
-              <Link
+              <div
                 key={item.name}
-                to={item.href}
-                onClick={(e) => handleNavigation(item.href, e)}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                  isActive(item.href)
-                    ? "bg-gray-900 text-white"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                }`}
+                className="relative h-full flex items-center"
               >
-                {item.name}
-              </Link>
+                {item.submenu ? (
+                  <div
+                    ref={toolsMenuRef}
+                    className="h-full flex items-center"
+                    onMouseEnter={() => setDesktopSubmenuOpen(true)}
+                    onMouseLeave={() => setDesktopSubmenuOpen(false)}
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setDesktopSubmenuOpen(!desktopSubmenuOpen);
+                      }}
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                        isActive(item.href)
+                          ? "bg-gray-900 text-white"
+                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      }`}
+                    >
+                      {item.name}
+                      {desktopSubmenuOpen ? (
+                        <ChevronUp className="ml-1 h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="ml-1 h-4 w-4" />
+                      )}
+                    </button>
+
+                    {desktopSubmenuOpen && (
+                      <div className="absolute z-10 left-0 top-full mt-0 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                        <div className="py-1">
+                          {item.submenu.map((subItem) => (
+                            <Link
+                              key={subItem.name}
+                              to={subItem.href}
+                              onClick={(e) => {
+                                navigate(subItem.href); // Fixed: Use navigate to go to ROI calculator
+                                setDesktopSubmenuOpen(false);
+                              }}
+                              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              {subItem.icon}
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    to={item.href}
+                    onClick={(e) => handleNavigation(item.href, e)}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                      isActive(item.href)
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                )}
+              </div>
             ))}
           </nav>
 
@@ -181,18 +260,57 @@ const Header = () => {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 rounded-lg mb-4">
               {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  onClick={(e) => handleNavigation(item.href, e)}
-                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                    isActive(item.href)
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                  }`}
-                >
-                  {item.name}
-                </Link>
+                <div key={item.name}>
+                  {item.submenu ? (
+                    <div>
+                      <button
+                        onClick={() => setMobileSubmenuOpen(!mobileSubmenuOpen)}
+                        className={`flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                          isActive(item.href)
+                            ? "bg-gray-900 text-white"
+                            : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        }`}
+                      >
+                        <span>{item.name}</span>
+                        {mobileSubmenuOpen ? (
+                          <ChevronUp className="h-5 w-5" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5" />
+                        )}
+                      </button>
+                      {mobileSubmenuOpen && (
+                        <div className="pl-4 mt-1 space-y-1">
+                          {item.submenu.map((subItem) => (
+                            <Link
+                              key={subItem.name}
+                              to={subItem.href}
+                              onClick={() => {
+                                navigate(subItem.href); // Fixed: Use navigate to go to ROI calculator
+                                setIsMenuOpen(false);
+                              }}
+                              className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                            >
+                              {subItem.icon}
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Link
+                      to={item.href}
+                      onClick={(e) => handleNavigation(item.href, e)}
+                      className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                        isActive(item.href)
+                          ? "bg-gray-900 text-white"
+                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      }`}
+                    >
+                      {item.name}
+                    </Link>
+                  )}
+                </div>
               ))}
             </div>
           </div>

@@ -425,7 +425,15 @@ const Careers = () => {
             </CardHeader>
             <CardContent>
               <Stepper />
-              <form onSubmit={handleSubmit} className="space-y-8">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (currentStep === 5 && selectedInterviewSlot) {
+                    handleSubmit(e);
+                  }
+                }}
+                className="space-y-8"
+              >
                 {/* Step 1: Personal Information */}
                 {currentStep === 1 && (
                   <div className="space-y-6">
@@ -992,6 +1000,7 @@ const Careers = () => {
                     </h3>
                     <InterviewScheduler
                       onSlotSelect={(slot) => {
+                        // Just update the selected slot without submitting
                         setSelectedInterviewSlot(slot);
                       }}
                     />
@@ -1006,6 +1015,10 @@ const Careers = () => {
                           )}
                         </p>
                         <p>Time: {selectedInterviewSlot.time}</p>
+                        <p className="text-sm text-gray-600 mt-2">
+                          Click the "Submit Application" button below to
+                          complete your application.
+                        </p>
                       </div>
                     )}
                   </div>

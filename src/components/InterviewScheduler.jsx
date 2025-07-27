@@ -64,7 +64,6 @@ const InterviewScheduler = ({ onSlotSelect }) => {
     );
   };
 
-  // Replace the existing handleSlotClick function with this one:
   const handleSlotClick = (date, slot) => {
     const now = new Date();
     const slotDateTime = new Date(`${date}T${slot.time}`);
@@ -83,21 +82,23 @@ const InterviewScheduler = ({ onSlotSelect }) => {
       return;
     }
 
-    // Use slot.id instead of slot._id
     const selectedSlotData = {
       date,
       time: slot.time,
-      id: slot.id, // This is the correct field name
+      id: slot.id,
     };
 
+    // Update local state
     setSelectedSlot(selectedSlotData);
 
+    // Only update parent's state, don't trigger submission
     if (onSlotSelect) {
       onSlotSelect(selectedSlotData);
     }
 
+    // Show selection confirmation
     toast.success(
-      "Interview slot selected."
+      "Interview slot selected. Click 'Submit Application' when ready."
     );
   };
 
