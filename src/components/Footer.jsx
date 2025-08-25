@@ -165,12 +165,12 @@ const Footer = () => {
               © {currentYear} Crystal Power Investments. All rights reserved.
             </div>
             <div className="flex space-x-6 text-sm">
-              <a
-                href="#"
+              <Link
+                to="/privacy-policy"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
               >
                 Privacy Policy
-              </a>
+              </Link>
               <a
                 href="#"
                 className="text-gray-400 hover:text-white transition-colors duration-200"

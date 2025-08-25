@@ -191,7 +191,7 @@ const ROICalculator = () => {
 
     try {
       const response = await fetch(
-        "https://cpi-landing-webpage-backend-production.up.railway.app/api/tools/calculateRoi",
+        "http://localhost:5000/api/tools/calculateRoi",
         {
           method: "POST",
           headers: {
@@ -1626,34 +1626,33 @@ const ROICalculator = () => {
                       onChange={(e) =>
                         handleInputChange("analysisYears", e.target.value)
                       }
-                      className="mt-1"
-                      min="1"
-                      max="30"
-                      placeholder="e.g., 5"
                     />
                   </div>
-                  {formData.exitStrategy === "sell" && (
-                    <div>
-                      <Label htmlFor="sellYear">
-                        <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-2" />
-                          Planned Sale Year
-                        </div>
-                      </Label>
-                      <Input
-                        id="sellYear"
-                        type="number"
-                        value={formData.sellYear}
-                        onChange={(e) =>
-                          handleInputChange("sellYear", e.target.value)
-                        }
-                        className="mt-1"
-                        min="1"
-                        max={formData.analysisYears}
-                        placeholder={`1-${formData.analysisYears}`}
-                      />
-                    </div>
-                  )}
+
+                  {/* Modified sellYear field */}
+                  <div
+                    style={{
+                      display:
+                        formData.exitStrategy === "sell" ? "block" : "none",
+                    }}
+                  >
+                    <Label htmlFor="sellYear">
+                      <div className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Planned Sale Year
+                      </div>
+                    </Label>
+                    <Input
+                      id="sellYear"
+                      type="number"
+                      value={formData.sellYear}
+                      onChange={(e) =>
+                        handleInputChange("sellYear", e.target.value)
+                      }
+                      min="1"
+                      max={formData.analysisYears}
+                    />
+                  </div>
                 </div>
               </div>
 

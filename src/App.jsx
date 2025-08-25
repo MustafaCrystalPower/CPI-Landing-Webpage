@@ -6,6 +6,7 @@ import Careers from "./components/Careers";
 import Contact from "./components/Contact";
 import "./App.css";
 import ROICalculator from "./components/ROICalculator";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/careers" element={<Careers />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/roi-calculator" element={<ROICalculator />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           </Routes>
         </main>
         <Footer />
