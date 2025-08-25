@@ -7,6 +7,7 @@ import Contact from "./components/Contact";
 import "./App.css";
 import ROICalculator from "./components/ROICalculator";
 import PrivacyPolicy from "./components/PrivacyPolicy";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <div className="min-h-screen bg-white flex flex-col">
         <Header />
         <main className="flex-grow">
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/careers" element={<Careers />} />
